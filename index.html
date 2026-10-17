@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NARUTO: HÀNH TRÌNH VƯỢT ẢI CỨU SASUKE - NGỮ VĂN 12</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .font-ninja {
+            font-family: 'Teko', sans-serif;
+            letter-spacing: 1px;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #60a5fa;
+        }
+        /* Glowing Effects */
+        .glow-orange {
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+        }
+        .glow-blue {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+        .glow-purple {
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+        /* Damage Floater Animation */
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            50% { opacity: 1; transform: translateY(-30px) scale(1.3); }
+            100% { opacity: 0; transform: translateY(-60px) scale(1); }
+        }
+        .damage-float {
+            position: absolute;
+            animation: floatUp 0.8s ease-out forwards;
+            pointer-events: none;
+            font-weight: 800;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative pb-12">
+
+    <!-- Canvas Particle Background -->
+    <canvas id="chakraCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
+    <!-- Main Container -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+        <!-- HEADER & HERO SECTION -->
+        <header class="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-6 mb-8 glow-orange">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+                <!-- Branding -->
+                <div class="text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-orange-500/10 border border-orange-500/30 rounded-full text-orange-400 text-xs font-bold uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-scroll"></i> Ôn Thi THPT Quốc Gia 2026
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-300 font-ninja tracking-wide uppercase">
+                        HÀNH TRÌNH CỨU SASUKE - NGỮ VĂN 12
+                    </h1>
+                    <div class="text-slate-400 text-sm mt-1 flex flex-wrap items-center justify-center lg:justify-start gap-4 font-medium">
+                        <span><i class="fa-solid fa-school text-orange-400 mr-1"></i> THPT Yên Lãng</span>
+                        <span><i class="fa-solid fa-user-ninja text-blue-400 mr-1"></i> Tác giả: <strong>Lưu Việt Quang (12A2)</strong></span>
+                        <span><i class="fa-solid fa-chalkboard-user text-emerald-400 mr-1"></i> GVHD: <strong>Cô Võ Thị Mỹ Ngà</strong></span>
+                    </div>
+                </div>
+
+                <!-- Live Ninja Stats Badge -->
+                <div class="flex items-center gap-4 bg-slate-950/80 p-4 rounded-xl border border-slate-800 shadow-inner">
+                    <div class="text-center px-3">
+                        <div class="text-xs text-slate-400 font-semibold uppercase">Cấp Độ Ninja</div>
+                        <div id="ninjaRank" class="text-lg font-bold text-amber-400">Học Giả Làng Lá</div>
+                    </div>
+                    <div class="h-8 w-px bg-slate-800"></div>
+                    <div class="text-center px-3">
+                        <div class="text-xs text-slate-400 font-semibold uppercase">Chakra Văn Học</div>
+                        <div id="totalScore" class="text-2xl font-black text-blue-400">0 EXP</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD BANNER -->
+        <section class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl text-center">
+                <i class="fa-solid fa-crosshairs text-orange-400 text-xl mb-1"></i>
+                <div class="text-xs text-slate-400">Tiến Độ Giải Cứu</div>
+                <div id="rescueProgressPercent" class="text-xl font-bold text-slate-100">0%</div>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl text-center">
+                <i class="fa-solid fa-bolt text-yellow-400 text-xl mb-1"></i>
+                <div class="text-xs text-slate-400">Chuỗi Tuyệt Chiêu</div>
+                <div id="maxStreakDisplay" class="text-xl font-bold text-slate-100">0 Combo</div>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl text-center">
+                <i class="fa-solid fa-trophy text-emerald-400 text-xl mb-1"></i>
+                <div class="text-xs text-slate-400">Ải Đã Vượt</div>
+                <div id="bossClearedCount" class="text-xl font-bold text-slate-100">0 / 5</div>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl text-center">
+                <i class="fa-solid fa-fire text-red-400 text-xl mb-1"></i>
+                <div class="text-xs text-slate-400">Trạng Thái Rasengan</div>
+                <div id="rasenganStatus" class="text-xl font-bold text-slate-500">Sẵn Sàng</div>
+            </div>
+        </section>
+
+        <!-- NAVIGATION TABS -->
+        <div class="flex flex-wrap gap-2 mb-8 justify-center">
+            <button onclick="switchTab('mode1')" id="tab-mode1" class="tab-btn active px-5 py-3 rounded-xl font-bold text-sm transition-all bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg glow-orange">
+                <i class="fa-solid fa-khanda mr-2"></i> Mode 1: Đại Chiến Cứu Sasuke
+            </button>
+            <button onclick="switchTab('mode2')" id="tab-mode2" class="tab-btn px-5 py-3 rounded-xl font-bold text-sm transition-all bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700">
+                <i class="fa-solid fa-brain mr-2"></i> Mode 2: Mật Mã Tác Giả - Tác Phẩm
+            </button>
+            <button onclick="switchTab('mode3')" id="tab-mode3" class="tab-btn px-5 py-3 rounded-xl font-bold text-sm transition-all bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700">
+                <i class="fa-solid fa-stopwatch mr-2"></i> Mode 3: Bắt Nhịp Tu Từ 60s
+            </button>
+            <button onclick="switchTab('mode4')" id="tab-mode4" class="tab-btn px-5 py-3 rounded-xl font-bold text-sm transition-all bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700">
+                <i class="fa-solid fa-pen-nib mr-2"></i> Mode 4: Máy Tạo Dàn Ý 12 Tác Phẩm
+            </button>
+        </div>
+
+        <!-- MODE 1: RPG BOSS BATTLE -->
+        <div id="mode1" class="tab-content block">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden">
+                <!-- Boss Status Bar -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-slate-800 border-2 border-orange-500 flex items-center justify-center text-2xl font-bold text-orange-400" id="bossIcon">
+                            👺
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-400 font-bold uppercase" id="bossStageTitle">Ải 1: Âm Nhẫn Gia Tộc</div>
+                            <h3 class="text-xl font-extrabold text-white" id="bossName">Jirōbō & Tayuya</h3>
+                        </div>
+                    </div>
+
+                    <!-- HP Bar -->
+                    <div class="w-full md:w-1/2">
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-red-400">MÁU KẺ THÙ</span>
+                            <span id="bossHpText" class="text-slate-300">100 / 100 HP</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                            <div id="bossHpBar" class="bg-gradient-to-r from-red-600 to-orange-500 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battle Question Area -->
+                <div class="relative bg-slate-950/60 rounded-xl p-6 mb-6 border border-slate-800 min-h-[200px] flex flex-col justify-center">
+                    <div id="battleQuestionTag" class="text-xs font-bold text-orange-400 uppercase tracking-widest mb-2"><i class="fa-solid fa-scroll mr-1"></i> Câu hỏi đòn đánh</div>
+                    <h2 id="bossQuestionText" class="text-lg sm:text-xl font-semibold text-slate-100 leading-relaxed">
+                        Đang tải dữ liệu trận đấu...
+                    </h2>
+
+                    <!-- Damage Floater Container -->
+                    <div id="damageContainer" class="absolute inset-0 pointer-events-none flex items-center justify-center"></div>
+                </div>
+
+                <!-- Options Grid -->
+                <div id="bossOptionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <!-- Option Buttons dynamically inserted -->
+                </div>
+
+                <!-- Battle Action Footer -->
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800">
+                    <button onclick="showTeacherModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-lg text-sm font-bold flex items-center gap-2 border border-emerald-500/30">
+                        <i class="fa-solid fa-lightbulb"></i> Lời khuyên từ Cô Võ Thị Mỹ Ngà
+                    </button>
+                    <button id="rasenganBtn" onclick="useRasengan()" disabled class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg text-sm font-extrabold tracking-wide uppercase shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all glow-blue">
+                        <i class="fa-solid fa-compact-disc animate-spin mr-2"></i> Tung Rasengan (Cần Combo x3)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODE 2: AUTHOR & WORK MATCHING MATRIX -->
+        <div id="mode2" class="tab-content hidden">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+                <div class="text-center max-w-2xl mx-auto mb-8">
+                    <h2 class="text-2xl font-bold text-amber-400 mb-2">MA TRẬN MẬT MÃ TÁC GIẢ - TÁC PHẨM</h2>
+                    <p class="text-slate-400 text-sm">Ghép nối đúng trích đoạn, phong cách nghệ thuật với tác giả/tác phẩm tương ứng để giải mã ma trận.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Clue Card -->
+                    <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Manh Mối Mật Mã</span>
+                            <div id="matrixClueText" class="text-lg font-medium text-slate-200 mt-3 leading-relaxed">
+                                "Đang tải dữ liệu ma trận..."
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs text-slate-500">
+                            <span>Độ khó: <strong class="text-amber-400" id="matrixDifficulty">Thượng Nhẫn</strong></span>
+                            <span>Điểm thưởng: <strong class="text-emerald-400">+150 EXP</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Targets Selection Grid -->
+                    <div id="matrixTargetsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Target Options inserted via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODE 3: 60s RHETORICAL SPEED QUIZ -->
+        <div id="mode3" class="tab-content hidden">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">BẮT NHỊP TU TỪ 60S</h2>
+                        <p class="text-slate-400 text-xs">Nhận diện nhanh các biện pháp tu từ trong văn học 12 trước khi hết giờ!</p>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="text-center">
+                            <div class="text-xs text-slate-400">Thời Gian</div>
+                            <div id="timerDisplay" class="text-3xl font-ninja font-bold text-red-500">60s</div>
+                        </div>
+                        <button id="startTimerBtn" onclick="start60sQuiz()" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all">
+                            Bắt Đầu Tấn Công
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Area -->
+                <div id="quiz60sBox" class="bg-slate-950 p-6 rounded-xl border border-slate-800 mb-6 min-h-[160px] flex items-center justify-center text-center">
+                    <p id="quiz60sText" class="text-lg font-medium text-slate-300">Nhấn <strong>"Bắt Đầu Tấn Công"</strong> để bắt đầu tính giờ 60 giây.</p>
+                </div>
+
+                <!-- Rhetorical Device Buttons -->
+                <div id="quiz60sOptions" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pointer-events-none opacity-50">
+                    <!-- Buttons inserted via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- MODE 4: ESSAY OUTLINE & STRATEGY GENERATOR (12 WORKS) -->
+        <div id="mode4" class="tab-content hidden">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-amber-400 mb-1">MÁY TẠO CHIẾN THUẬT LẬP DÀN Ý & KHAI MẠCH VĂN HỌC</h2>
+                    <p class="text-slate-400 text-sm">Trọn bộ 12 tác phẩm trọng tâm Ngữ Văn 12 - Tự động đề xuất Mở bài, Từ khóa đắt, So sánh và Dàn ý sâu.</p>
+                </div>
+
+                <!-- Work & Essay Type Controls -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Chọn Tác Phẩm (12 Bài Trọng Tâm)</label>
+                        <select id="mode4WorkSelect" onchange="generateOutline()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:border-amber-500">
+                            <option value="taytien">1. Tây Tiến (Quang Dũng)</option>
+                            <option value="vietbac">2. Việt Bắc (Tố Hữu)</option>
+                            <option value="datnuoc">3. Đất Nước (Nguyễn Khoa Điềm)</option>
+                            <option value="song">4. Sóng (Xuân Quỳnh)</option>
+                            <option value="songda">5. Người Lái Đò Sông Đà (Nguyễn Tuân)</option>
+                            <option value="songhuong">6. Ai Đã Đặt Tên Cho Dòng Sông? (Hoàng Ngọc Phủ)</option>
+                            <option value="vonhat">7. Vợ Nhặt (Kim Lân)</option>
+                            <option value="vochongaphu">8. Vợ Chồng A Phủ (Tô Hoài)</option>
+                            <option value="chiecthuyen">9. Chiếc Thuyền Ngoài Xa (Nguyễn Minh Châu)</option>
+                            <option value="hontruongba">10. Hồn Trương Ba, Da Hàng Thịt (Lưu Quang Vũ)</option>
+                            <option value="tuyenngon">11. Tuyên Ngôn Độc Lập (Hồ Chí Minh)</option>
+                            <option value="lorca">12. Đàn Ghita Của Lor-ca (Thanh Thảo)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Dạng Đề Bài</label>
+                        <select id="mode4TypeSelect" onchange="generateOutline()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:border-amber-500">
+                            <option value="phantich">Phân Tích / Cảm Nhận Toàn Tác Phẩm</option>
+                            <option value="doantrich">Cảm Nhận Đoạn Trích Bức Tranh / Nhân Vật</option>
+                            <option value="sosanh">Dạng Đề So Sánh Văn Học</option>
+                            <option value="lienhe">Nghị Luận Xã Hội Liên Hệ Mở Rộng</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-end">
+                        <button onclick="copyOutlineText()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-copy"></i> Sao Chép Dàn Ý Chiến Thuật
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Generated Output Cards -->
+                <div class="space-y-4" id="outlineOutputArea">
+                    <!-- Dynamic Outline Sections generated via JS -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TEACHER HINT MODAL -->
+    <div id="teacherModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 relative">
+            <button onclick="closeTeacherModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500 flex items-center justify-center text-emerald-400 text-xl">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-lg">Lời Khuyên Từ Cô Võ Thị Mỹ Ngà</h3>
+                    <p class="text-xs text-slate-400">Giáo viên hướng dẫn môn Ngữ Văn</p>
+                </div>
+            </div>
+            <div id="teacherHintText" class="text-slate-300 text-sm leading-relaxed mb-6 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                "Hãy đọc kỹ từ khóa trong câu hỏi. Trong văn học 12, sự kết hợp giữa cảm hứng lãng mạn và tinh thần bi tráng luôn là chìa khóa mở rộng tâm hồn người lính Tây Tiến."
+            </div>
+            <button onclick="closeTeacherModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm">
+                Đã Rõ Khai Thông Chakra!
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // WEB AUDIO SYNTHESIZER
+        const AudioEngine = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playHit() {
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.2);
+            },
+            playRasengan() {
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.5);
+            },
+            playWin() {
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+                osc.frequency.setValueAtTime(600, this.ctx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.4);
+            }
+        };
+
+        // GAME STATE
+        let gameState = {
+            score: 0,
+            combo: 0,
+            maxStreak: 0,
+            currentBossIndex: 0,
+            bossHp: 100,
+            bossMaxHp: 100,
+            bossesCleared: 0,
+            timer: 60,
+            timerInterval: null
+        };
+
+        // BOSS DATA
+        const bosses = [
+            {
+                name: "Jirōbō & Tayuya",
+                title: "Ải 1: Âm Nhẫn Gia Tộc",
+                icon: "👹",
+                maxHp: 100,
+                questions: [
+                    {
+                        q: "Hình tượng người lính Tây Tiến trong đoạn 1 'Sông Mã xa rồi Tây Tiến ơi' nổi bật với vẻ đẹp nào?",
+                        options: ["Ký ức hoang sơ, gian khổ nhưng ấm áp tình quân dân", "Sự hoa lệ của chốn thành thị Hà Thành", "Vẻ đẹp ủy mị, sầu não trước thiên nhiên", "Tinh thần khuất phục trước gian nguy"],
+                        correct: 0,
+                        hint: "Chú ý các hình ảnh 'Sài Khao sương lấp', 'Mường Lát hoa về trong đêm hơi'."
+                    },
+                    {
+                        q: "Cụm từ 'Nhớ về rừng núi nhớ chơi vơi' sử dụng nghệ thuật gì đặc sắc?",
+                        options: ["Từ láy 'chơi vơi' khắc họa nỗi nhớ mênh mang, hư ảo", "Phép so sánh trực tiếp với dòng sông", "Ẩn dụ chuyển đổi cảm giác về âm thanh", "Điệp từ 'rừng núi' 3 lần"],
+                        correct: 0,
+                        hint: "'Chơi vơi' gợi trạng thái nỗi nhớ không có hình dáng cụ thể nhưng bao trùm không gian."
+                    }
+                ]
+            },
+            {
+                name: "Kidōmaru",
+                title: "Ải 2: Quái Vật Nhện Độc",
+                icon: "🕷️",
+                maxHp: 150,
+                questions: [
+                    {
+                        q: "Trong 'Việt Bắc', hình ảnh 'Tiếng chày đập suối tiễn đưa người đi' biểu hiện điều gì?",
+                        options: ["Nếp sống lao động cần cù và nỗi niềm bịn rịn nghĩa tình", "Sự vội vã của cuộc chiến đấu gian khổ", "Âm thanh thiên nhiên hoang sơ rừng núi", "Sự khắc nghiệt của chiến khu kháng chiến"],
+                        correct: 0,
+                        hint: "Việt Bắc là bản hùng ca cũng là bản tình ca về tình quân dân thắm thiết."
+                    }
+                ]
+            },
+            {
+                name: "Sakon & Ukon",
+                title: "Ải 3: Song Sinh Quỷ Ảo",
+                icon: "🎭",
+                maxHp: 200,
+                questions: [
+                    {
+                        q: "Tư tưởng cốt lõi của đoạn trích 'Đất Nước' (Nguyễn Khoa Điềm) là gì?",
+                        options: ["Đất Nước của Nhân Dân", "Đất Nước của các triều đại anh hùng", "Đất Nước của thiên nhiên hùng vĩ", "Đất Nước của thần thoại xa xưa"],
+                        correct: 0,
+                        hint: "Nhân dân là người sáng tạo ra các giá trị văn hóa, địa lý và lịch sử."
+                    }
+                ]
+            },
+            {
+                name: "Kimimaro",
+                title: "Ải 4: Bạch Khốt Xương Nhẫn",
+                icon: "🦴",
+                maxHp: 250,
+                questions: [
+                    {
+                        q: "Trong 'Người Lái Đò Sông Đà', Nguyễn Tuân miêu tả Sông Đà ở đoạn thượng nguồn mang tính chất gì?",
+                        options: ["Hung bạo, dữ dội như một kẻ thù số một", "Êm đềm, thơ mộng như một bản tình ca", "Phẳng lặng như một chiếc gương soi", "Đục ngầu chở nặng phù sa mùa lũ"],
+                        correct: 0,
+                        hint: "Nguyễn Tuân dùng các hút nước, thác đá, trùng phong thạch trận để miêu tả sự hung bạo."
+                    }
+                ]
+            },
+            {
+                name: "Awakened Sasuke & Orochimaru",
+                title: "Ải 5: Trùm Cuối Sinh Tử",
+                icon: "🐍",
+                maxHp: 350,
+                questions: [
+                    {
+                        q: "Thảm kịch bi kịch lớn nhất của Hồn Trương Ba trong 'Hồn Trương Ba, Da Hàng Thịt' là gì?",
+                        options: ["Sự sống nhờ vào thân xác thô tháp, lệch lạc giữa bên trong và bên ngoài", "Không được đánh cờ với Đế Thích", "Bị gia đình xa lánh vì không có tiền", "Không thể tiếp tục làm nghề sản xuất"],
+                        correct: 0,
+                        hint: "Bi kịch sống không được là chính mình, bị linh hồn thô tóm bởi thể xác đòi hỏi."
+                    }
+                ]
+            }
+        ];
+
+        // MODE 4 EXPANDED 12 WORKS DATA
+        const outlineDatabase = {
+            taytien: {
+                title: "Tây Tiến (Quang Dũng)",
+                keywords: ["Cảm hứng lãng mạn", "Tinh thần bi tráng", "Chân dung người lính", "Thi trung hữu họa"],
+                openings: {
+                    phantich: "Văn học giai đoạn 1945 - 1954 ghi dấu bước chân của những người lính trí thức Hà Thành ra đi vì nghĩa lớn. Trong số đó, 'Tây Tiến' của Quang Dũng đứng như một đài tóm bằng thơ hùng vĩ...",
+                    doantrich: "Đoạn trích trong bài thơ 'Tây Tiến' là kết tinh rực rỡ của cảm hứng lãng mạn và tinh thần bi tráng, khắc họa trọn vẹn chí khí và tâm hồn người lính..."
+                },
+                outline: [
+                    "I. Mở bài: Giới thiệu tác giả Quang Dũng và hoàn cảnh sáng tác bài thơ Tây Tiến tại Phù Lưu Chanh.",
+                    "II. Thân bài: Phân tích khung cảnh thiên nhiên Tây Bắc hùng vĩ, độc đáo và bức chân dung bi tráng của đoàn quân Tây Tiến.",
+                    "III. Đánh giá: Nghệ thuật sử dụng từ Hán Việt, chất nhạc chất họa hòa quyện.",
+                    "IV. Kết bài: Khẳng định giá trị trường tồn của tác phẩm trong thi xóm kháng chiến."
+                ]
+            },
+            vietbac: {
+                title: "Việt Bắc (Tố Hữu)",
+                keywords: ["Tính dân tộc", "Khúc tình ca & Hùng ca", "Lục bát uyển chuyển", "Tình quân dân"],
+                openings: {
+                    phantich: "Tố Hữu là lá cờ đầu của thơ ca cách mạng Việt Nam. 'Việt Bắc' không chỉ là khúc ca chia tay bịn rịn mà còn là đỉnh cao của tình nghĩa cách mạng...",
+                    doantrich: "Đoạn thơ trên đã tái hiện sinh động không gian hoài niệm sâu lắng, nơi tình cảm giữa người đi và kẻ ở hòa quyện thành bản tình ca thủy chung..."
+                },
+                outline: [
+                    "I. Mở bài: Tố Hữu - nhà thơ của lý tưởng cộng sản; Việt Bắc - bản hùng ca kháng chiến.",
+                    "II. Thân bài: Tái hiện nỗi nhớ về thiên nhiên, con người Việt Bắc và những kỷ niệm kháng chiến oanh liệt.",
+                    "III. Đánh giá: Thể thơ lục bát đậm đà tính dân tộc, cặp đại từ mình - ta tinh tế.",
+                    "IV. Kết bài: Khẳng định sức sống của tình nghĩa cách mạng trong lòng dân tộc."
+                ]
+            },
+            datnuoc: {
+                title: "Đất Nước (Nguyễn Khoa Điềm)",
+                keywords: ["Đất Nước của Nhân Dân", "Chất trữ tình chính luận", "Chất liệu văn hóa dân gian"],
+                openings: {
+                    phantich: "Cảm hứng về đất nước luôn là nguồn sữa ngọt ngào nuôi dưỡng thi ca Việt Nam. Với Nguyễn Khoa Điềm, Đất Nước hiện lên gần gũi, gắn liền với Nhân dân...",
+                    doantrich: "Bằng chất trữ tình chính luận sâu sắc, đoạn trích đã định nghĩa Đất Nước từ những chiều kích văn hóa, địa lý và lịch sử thiêng liêng..."
+                },
+                outline: [
+                    "I. Mở bài: Nguyễn Khoa Điềm và cái nhìn mới mẻ về Đất Nước thuộc trường ca 'Mặt đường khát vọng'.",
+                    "II. Thân bài: Đất Nước hình thành từ những gì gần gũi nhất, Nhân dân là người làm nên Đất Nước.",
+                    "III. Đánh giá: Vận dụng sáng tạo ca dao, huyền thoại, tục ngữ dân gian.",
+                    "IV. Kết bài: Bài học về trách nhiệm của thế hệ trẻ đối với quê hương."
+                ]
+            },
+            song: {
+                title: "Sóng (Xuân Quỳnh)",
+                keywords: ["Tình yêu lứa đôi", "Khát vọng vĩnh hằng", "Hình tượng sóng & em", "Trữ tình đằm thắm"],
+                openings: {
+                    phantich: "Xuân Quỳnh là một trong những trái tim thơ trữ tình đằm thắm, thấu hiểu những âu lo và khát vọng mãnh liệt của tình yêu lứa đôi...",
+                    doantrich: "Hình tượng 'Sóng' trong đoạn thơ là sự ẩn dụ hoàn hảo cho tâm hồn người phụ nữ đang yêu: vừa dồn dập mãnh liệt vừa dịu êm sâu lắng..."
+                },
+                outline: [
+                    "I. Mở bài: Giới thiệu nữ sĩ Xuân Quỳnh và hoàn cảnh sáng tác bài thơ 'Sóng' tại biển Diễn Châu.",
+                    "II. Thân bài: Bản chất của sóng và sóng tâm hồn; khát vọng vĩnh cửu hóa tình yêu chân thành.",
+                    "III. Đánh giá: Nhịp điệu sóng vỗ dồn dập, thể thơ 5 chữ giàu nhịp điệu.",
+                    "IV. Kết bài: Khẳng định giá trị nhân văn và sức sống bất tử của tình yêu."
+                ]
+            },
+            songda: {
+                title: "Người Lái Đò Sông Đà (Nguyễn Tuân)",
+                keywords: ["Cái đẹp độc đáo", "Hung bạo & Thơ mộng", "Chất vàng mười", "Tùy bút tài hoa"],
+                openings: {
+                    phantich: "Nguyễn Tuân - người suốt đời đi tìm cái đẹp tự do và tài hoa. Tùy bút 'Người Lái Đò Sông Đà' là sự kết tinh của ngòi bút tài hoa ấy...",
+                    doantrich: "Trích đoạn miêu tả vẻ đẹp của dòng sông và hình ảnh người lái đò như một nghệ sĩ trên sóng nước hào hùng..."
+                },
+                outline: [
+                    "I. Mở bài: Nguyễn Tuân - bậc thầy ngôn từ; hoàn cảnh chuyến đi thực tế Tây Bắc.",
+                    "II. Thân bài: Vẻ đẹp hung bạo trùng phong thạch trận và vẻ đẹp trữ tình thơ mộng của Sông Đà.",
+                    "III. Đánh giá: Vốn tri thức đa dạng (điện ảnh, quân sự, võ thuật), ngôn từ giàu hình ảnh.",
+                    "IV. Kết bài: Sông Đà - biểu tượng thiên nhiên và con người lao động mới."
+                ]
+            },
+            songhuong: {
+                title: "Ai Đã Đặt Tên Cho Dòng Sông? (Hoàng Ngọc Phủ)",
+                keywords: ["Trữ tình mênh mang", "Mối tình với Huế", "Lịch sử & Văn hóa", "Bút pháp mê đắm"],
+                openings: {
+                    phantich: "Hoàng Ngọc Phủ là chuyên gia của thể loại ký. Với 'Ai đã đặt tên cho dòng sông?', dòng Sông Hương hiện lên như một người tình tài hoa...",
+                    doantrich: "Đoạn trích dẫn dắt người đọc qua hành trình thủy trình rực rỡ của Sông Hương từ thượng nguồn hoang dại đến vẻ đẹp trầm mạc chốn kinh kỳ..."
+                },
+                outline: [
+                    "I. Mở bài: Tác giả Hoàng Ngọc Phủ và tình yêu đắm say dành cho cố đô Huế.",
+                    "II. Thân bài: Sông Hương ở thượng nguồn, khi chảy qua châu thổ và khi nằm trong lòng thành phố Huế.",
+                    "III. Đánh giá: Bút pháp ký giàu chất thơ, liên tưởng bất ngờ và uyển chuyển.",
+                    "IV. Kết bài: Sông Hương - biểu tượng tâm hồn và văn hóa xứ Huế."
+                ]
+            },
+            vonhat: {
+                title: "Vợ Nhặt (Kim Lân)",
+                keywords: ["Tình người trong nạn đói", "Khát vọng sống", "Tấm lòng nhân hậu", "Chi tiết đắt giá"],
+                openings: {
+                    phantich: "Kim Lân là nhà văn của làng quê Việt Nam. Truyện ngắn 'Vợ Nhặt' mở ra khung cảnh thảm đạm của nạn đói 1945 nhưng lấp lánh tình người...",
+                    doantrich: "Qua đoạn trích, hình ảnh con người trong biến cố lịch sử không gục ngã mà nương tựa vào nhau tìm kiếm sự sống..."
+                },
+                outline: [
+                    "I. Mở bài: Kim Lân - nhà văn am hiểu nông thôn; 'Vợ Nhặt' rút từ tiểu thuyết 'Xóm ngụ cư'.",
+                    "II. Thân bài: Bối cảnh nạn đói; hành động nhặt vợ của Tràng; sự thay đổi của cụ Tứ và người vợ nhặt.",
+                    "III. Đánh giá: Tình huống truyện độc đáo, nghệ thuật miêu tả tâm lý nhân vật tinh tế.",
+                    "IV. Kết bài: Giá trị nhân đạo sâu sắc của tác phẩm."
+                ]
+            },
+            vochongaphu: {
+                title: "Vợ Chồng A Phủ (Tô Hoài)",
+                keywords: ["Sức sống tiềm tàng", "Hiện thực & Nhân đạo", "Cảnh cúng trình ma", "Đêm xuân Hồng Ngài"],
+                openings: {
+                    phantich: "Tô Hoài có vốn hiểu biết phong phú về phong tục và con người Tây Bắc. 'Vợ Chồng A Phủ' là khúc ca về sức sống tiềm tàng vươn lên...",
+                    doantrich: "Hình ảnh nhân vật Mị trong đêm xuân Hồng Ngài là minh chứng cho sức sống dồn nén bùng cháy giải thoát bản thân..."
+                },
+                outline: [
+                    "I. Mở bài: Tô Hoài và tập 'Truyện Tây Bắc'; số phận người lao động dưới ách thống trị.",
+                    "II. Thân bài: Bi kịch làm dâu gạt nợ của Mị; diễn biến tâm trạng đêm xuân và hành động cởi chói cứu A Phủ.",
+                    "III. Đánh giá: Nghệ thuật miêu tả tâm lý nhân vật tài tình, không gian Tây Bắc đậm nét.",
+                    "IV. Kết bài: Sự đổi đời của con người vùng cao theo ánh sáng cách mạng."
+                ]
+            },
+            chiecthuyen: {
+                title: "Chiếc Thuyền Ngoài Xa (Nguyễn Minh Châu)",
+                keywords: ["Góc nhìn đa chiều", "Nghệ thuật & Cuộc đời", "Người đàn bà chài lưới", "Bi kịch gia đình"],
+                openings: {
+                    phantich: "Nguyễn Minh Châu là người mở đường tinh anh cho văn học thời kỳ đổi mới. 'Chiếc Thuyền Ngoài Xa' đặt ra câu hỏi về mối quan hệ giữa nghệ thuật và đời sống...",
+                    doantrich: "Đoạn trích bóc tách lớp vỏ đẹp đẽ của chiếc thuyền trong sương sớm để hiện thực hóa bi kịch bạo lực gia đình..."
+                },
+                outline: [
+                    "I. Mở bài: Nguyễn Minh Châu và xu hướng đổi mới sáng tác; hoàn cảnh ra đời tác phẩm.",
+                    "II. Thân bài: Hai phát hiện của người nghệ sĩ Phùng; câu chuyện ở tòa án huyện của người đàn bà chài lưới.",
+                    "III. Đánh giá: Xây dựng tình huống nhận thức, biểu tượng chiếc thuyền và tấm ảnh.",
+                    "IV. Kết bài: Bài học về nhìn nhận con người và cuộc sống đa chiều."
+                ]
+            },
+            hontruongba: {
+                title: "Hồn Trương Ba, Da Hàng Thịt (Lưu Quang Vũ)",
+                keywords: ["Bi kịch sống nhờ", "Hòa hợp giữa trong & ngoài", "Triết lý nhân sinh", "Kịch bản xuất sắc"],
+                openings: {
+                    phantich: "Lưu Quang Vũ là một trong những nhà soạn kịch tài năng nhất của sân khấu Việt Nam. Vở kịch khao khát quyền sống trọn vẹn là chính mình...",
+                    doantrich: "Cuộc đối thoại giữa Hồn Trương Ba và Xác Hàng Thịt thể hiện đỉnh cao bi kịch tha hóa khi linh hồn bị thể xác chi phối..."
+                },
+                outline: [
+                    "I. Mở bài: Tác giả Lưu Quang Vũ; vở kịch 'Hồn Trương Ba, Da Hàng Thịt' phát triển từ truyện dân gian.",
+                    "II. Thân bài: Bi kịch tha hóa của Trương Ba; màn đối thoại với Đế Thích và quyết định trả xác.",
+                    "III. Đánh giá: Tác phẩm mang tính triết lý nhân sinh sâu sắc, ngôn ngữ kịch sắc bén.",
+                    "IV. Kết bài: Khát vọng được sống tự do, toàn vẹn và trung thực."
+                ]
+            },
+            tuyenngon: {
+                title: "Tuyên Ngôn Độc Lập (Hồ Chí Minh)",
+                keywords: ["Lập luận sắc bén", "Lý lẽ thuyết phục", "Bản hùng văn đại diện dân tộc", "Giá trị lịch sử"],
+                openings: {
+                    phantich: "Hồ Chí Minh - vĩ nhân dân tộc và nhà văn hóa lớn. 'Tuyên Ngôn Độc Lập' là văn kiện lịch sử vô giá đồng thời là tác phẩm chính luận xuất sắc...",
+                    doantrich: "Đoạn trích bác bỏ đanh thép luận điệu của thực dân, khẳng định quyền độc lập tự do không thể xâm phạm của dân tộc Việt Nam..."
+                },
+                outline: [
+                    "I. Mở bài: Bối cảnh ngày 2/9/1945 tại Quảng trường Ba Đình; mục đích viết bản Tuyên ngôn.",
+                    "II. Thân bài: Cơ sở pháp lý quốc tế; tố cáo tội ác của thực dân Pháp; tuyên bố độc lập.",
+                    "III. Đánh giá: Ngôn từ chuẩn xác, lập luận đanh thép, bằng chứng không thể chối cãi.",
+                    "IV. Kết bài: Sức mạnh thời đại và giá trị vĩnh cửu của văn kiện."
+                ]
+            },
+            lorca: {
+                title: "Đàn Ghita Của Lor-ca (Thanh Thảo)",
+                keywords: ["Thơ tượng trưng siêu thực", "Tiếng đàn bất tử", "Số phận bi hùng", "Hình tượng vầng trăng"],
+                openings: {
+                    phantich: "Thanh Thảo là nhà thơ luôn tìm tòi sự đổi mới về hình thức nghệ thuật. 'Đàn Ghita Của Lor-ca' xót thương cho người nghệ sĩ tự do Tây Ban Nha...",
+                    doantrich: "Đoạn thơ tái hiện cái chết bi thương của Lor-ca cùng tiếng đàn bất tử hóa qua những chuỗi âm thanh tượng trưng..."
+                },
+                outline: [
+                    "I. Mở bài: Nhà thơ Thanh Thảo và niềm cảm hứng với nghệ sĩ Lor-ca.",
+                    "II. Thân bài: Hình ảnh Lor-ca đơn độc; sự hi sinh bi thảm và sức sống bất tử của tiếng đàn.",
+                    "III. Đánh giá: Thơ tượng trưng siêu thực, hình ảnh mang tính ẩn dụ cao.",
+                    "IV. Kết bài: Sự tri âm của Thanh Thảo đối với tự do và nghệ thuật chân chính."
+                ]
+            }
+        };
+
+        // CANVAS CHAKRA PARTICLES
+        function initParticles() {
+            const canvas = document.getElementById('chakraCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let particles = [];
+            for (let i = 0; i < 40; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    color: Math.random() > 0.5 ? '#f97316' : '#3b82f6',
+                    speedY: -Math.random() * 0.8 - 0.2,
+                    speedX: (Math.random() - 0.5) * 0.5
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = 0.6;
+                    ctx.fill();
+
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+
+                    if (p.y < 0) {
+                        p.y = canvas.height;
+                        p.x = Math.random() * canvas.width;
+                    }
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // TAB SWITCHING
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-gradient-to-r', 'from-orange-600', 'to-amber-600', 'text-white', 'glow-orange');
+                btn.classList.add('bg-slate-800', 'text-slate-400');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('tab-' + tabId);
+            activeBtn.classList.remove('bg-slate-800', 'text-slate-400');
+            activeBtn.classList.add('bg-gradient-to-r', 'from-orange-600', 'to-amber-600', 'text-white', 'glow-orange');
+
+            if (tabId === 'mode2') loadMatrixQuestion();
+            if (tabId === 'mode4') generateOutline();
+        }
+
+        // MODE 1 RPG BATTLE FUNCTIONS
+        function loadBossStage() {
+            const current = bosses[gameState.currentBossIndex];
+            document.getElementById('bossStageTitle').innerText = current.title;
+            document.getElementById('bossName').innerText = current.name;
+            document.getElementById('bossIcon').innerText = current.icon;
+            
+            gameState.bossHp = current.maxHp;
+            gameState.bossMaxHp = current.maxHp;
+            updateHpBar();
+
+            const q = current.questions[0];
+            document.getElementById('bossQuestionText').innerText = q.q;
+
+            // Render option buttons with shuffling
+            const grid = document.getElementById('bossOptionsGrid');
+            grid.innerHTML = '';
+            
+            // Create options array with original index tracking
+            let optionsWithIdx = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.correct }));
+            // Shuffle
+            optionsWithIdx.sort(() => Math.random() - 0.5);
+
+            optionsWithIdx.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 bg-slate-950 border border-slate-800 hover:border-orange-500 hover:bg-slate-900 text-left rounded-xl transition-all text-slate-200 text-sm font-semibold flex items-center justify-between";
+                btn.innerHTML = `<span>${item.text}</span> <i class="fa-solid fa-chevron-right text-xs text-slate-600"></i>`;
+                btn.onclick = (e) => handleAnswer(e, item.isCorrect);
+                grid.appendChild(btn);
+            });
+        }
+
+        function updateHpBar() {
+            const percent = Math.max(0, (gameState.bossHp / gameState.bossMaxHp) * 100);
+            document.getElementById('bossHpBar').style.width = percent + '%';
+            document.getElementById('bossHpText').innerText = `${Math.max(0, gameState.bossHp)} / ${gameState.bossMaxHp} HP`;
+        }
+
+        function handleAnswer(e, isCorrect) {
+            e.preventDefault();
+            if (isCorrect) {
+                AudioEngine.playHit();
+                const damage = 50 + (gameState.combo * 10);
+                gameState.bossHp -= damage;
+                gameState.score += 100;
+                gameState.combo += 1;
+                if (gameState.combo > gameState.maxStreak) gameState.maxStreak = gameState.combo;
+
+                showDamageFloat(`-${damage} HP!`, '#ef4444');
+                updateHpBar();
+
+                if (gameState.combo >= 3) {
+                    const rBtn = document.getElementById('rasenganBtn');
+                    rBtn.disabled = false;
+                    document.getElementById('rasenganStatus').innerText = "SẴN SÀNG!";
+                    document.getElementById('rasenganStatus').className = "text-xl font-bold text-cyan-400 animate-pulse";
+                }
+
+                if (gameState.bossHp <= 0) {
+                    AudioEngine.playWin();
+                    gameState.bossesCleared += 1;
+                    if (gameState.currentBossIndex < bosses.length - 1) {
+                        gameState.currentBossIndex += 1;
+                        setTimeout(() => {
+                            alert("ĐÃ TIÊU DIỆT KẺ THÙ! TIẾN VÀO ẢI TIẾP THEO!");
+                            loadBossStage();
+                        }, 500);
+                    } else {
+                        alert("CHÚC MỪNG! BẠN ĐÃ ĐÁNH BẠI OROCHIMARU VÀ CỨU THÀNH CÔNG SASUKE!");
+                    }
+                }
+            } else {
+                gameState.combo = 0;
+                showDamageFloat("HỤT RỒI!", '#94a3b8');
+                document.getElementById('rasenganBtn').disabled = true;
+                document.getElementById('rasenganStatus').innerText = "Chờ Combo";
+                document.getElementById('rasenganStatus').className = "text-xl font-bold text-slate-500";
+            }
+            updateDashboard();
+        }
+
+        function useRasengan() {
+            AudioEngine.playRasengan();
+            const damage = 120;
+            gameState.bossHp -= damage;
+            gameState.score += 250;
+            gameState.combo = 0;
+            showDamageFloat(`💥 RASENGAN -${damage} HP!`, '#06b6d4');
+            updateHpBar();
+
+            document.getElementById('rasenganBtn').disabled = true;
+            document.getElementById('rasenganStatus').innerText = "Đã Dùng";
+            document.getElementById('rasenganStatus').className = "text-xl font-bold text-slate-500";
+
+            if (gameState.bossHp <= 0 && gameState.currentBossIndex < bosses.length - 1) {
+                gameState.bossesCleared += 1;
+                gameState.currentBossIndex += 1;
+                setTimeout(() => {
+                    alert("CÚ ĐÁNH TỬ HUYỆT! BẠN ĐÃ VƯỢT QUA ẢI!");
+                    loadBossStage();
+                }, 500);
+            }
+            updateDashboard();
+        }
+
+        function showDamageFloat(text, color) {
+            const container = document.getElementById('damageContainer');
+            const el = document.createElement('div');
+            el.className = 'damage-float text-3xl font-ninja';
+            el.style.color = color;
+            el.innerText = text;
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 800);
+        }
+
+        function updateDashboard() {
+            document.getElementById('totalScore').innerText = `${gameState.score} EXP`;
+            document.getElementById('maxStreakDisplay').innerText = `${gameState.maxStreak} Combo`;
+            document.getElementById('bossClearedCount').innerText = `${gameState.bossesCleared} / 5`;
+            const progress = Math.round((gameState.bossesCleared / 5) * 100);
+            document.getElementById('rescueProgressPercent').innerText = `${progress}%`;
+
+            if (gameState.score > 500) document.getElementById('ninjaRank').innerText = "Thượng Nhẫn Huyền Thoại";
+            else if (gameState.score > 200) document.getElementById('ninjaRank').innerText = "Trung Nhẫn Tinh Anh";
+        }
+
+        // MODE 2 MATRIX FUNCTIONS
+        const matrixData = [
+            { clue: "Hình tượng người lái đò vượt trùng phong thạch trận dữ dội trên sông Đà.", target: "Người Lái Đò Sông Đà", author: "Nguyễn Tuân" },
+            { clue: "Tiếng đàn ghita bọt nước vỡ tan và hoa tử đinh hương bi thương.", target: "Đàn Ghita Của Lor-ca", author: "Thanh Thảo" },
+            { clue: "Nốt trầm triết lý sống toàn vẹn, không sống nhờ sống gửi vào thân xác khác.", target: "Hồn Trương Ba, Da Hàng Thịt", author: "Lưu Quang Vũ" }
+        ];
+
+        function loadMatrixQuestion() {
+            const randomItem = matrixData[Math.floor(Math.random() * matrixData.length)];
+            document.getElementById('matrixClueText').innerText = `"${randomItem.clue}"`;
+
+            const grid = document.getElementById('matrixTargetsGrid');
+            grid.innerHTML = '';
+
+            const targets = [
+                randomItem.target,
+                "Tây Tiến - Quang Dũng",
+                "Việt Bắc - Tố Hữu",
+                "Sóng - Xuân Quỳnh"
+            ].sort(() => Math.random() - 0.5);
+
+            targets.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 bg-slate-900 border border-slate-800 hover:border-amber-500 rounded-xl text-sm font-bold text-slate-200 transition-all text-center";
+                btn.innerText = t;
+                btn.onclick = () => {
+                    if (t === randomItem.target) {
+                        AudioEngine.playWin();
+                        alert("GIẢI MÃ THÀNH CÔNG! +150 EXP");
+                        gameState.score += 150;
+                        updateDashboard();
+                        loadMatrixQuestion();
+                    } else {
+                        alert("SAI MẬT MÃ! HÃY THỬ LẠI!");
+                    }
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        // MODE 3 60S SPEED QUIZ
+        const rhetoricalData = [
+            { q: "'Sông Mã xa rồi Tây Tiến ơi / Nhớ về rừng núi nhớ chơi vơi'", ans: "Từ láy & Điệp từ" },
+            { q: "'Thuyền về có nhớ bến giăng / Bến về có nhớ người giăng đợi chờ'", ans: "Ẩn dụ" },
+            { q: "'Bát cơm xẻ nửa, chăn lùi đắp cùng'", ans: "Hoán dụ" }
+        ];
+
+        function start60sQuiz() {
+            gameState.timer = 60;
+            document.getElementById('startTimerBtn').disabled = true;
+            document.getElementById('quiz60sOptions').classList.remove('pointer-events-none', 'opacity-50');
+
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+
+            gameState.timerInterval = setInterval(() => {
+                gameState.timer -= 1;
+                document.getElementById('timerDisplay').innerText = `${gameState.timer}s`;
+                if (gameState.timer <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    alert("HẾT GIỜ TẤN CÔNG!");
+                    document.getElementById('startTimerBtn').disabled = false;
+                    document.getElementById('quiz60sOptions').classList.add('pointer-events-none', 'opacity-50');
+                }
+            }, 1000);
+
+            next60sQuestion();
+        }
+
+        function next60sQuestion() {
+            const item = rhetoricalData[Math.floor(Math.random() * rhetoricalData.length)];
+            document.getElementById('quiz60sText').innerText = item.q;
+
+            const grid = document.getElementById('quiz60sOptions');
+            grid.innerHTML = '';
+
+            const opts = ["Ẩn dụ", "Hoán dụ", "Từ láy & Điệp từ", "Nhân hóa"];
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "p-3 bg-slate-900 border border-slate-800 hover:border-blue-500 rounded-xl text-xs font-bold text-slate-200";
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (opt === item.ans) {
+                        AudioEngine.playHit();
+                        gameState.score += 50;
+                        updateDashboard();
+                        next60sQuestion();
+                    }
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        // MODE 4 EXPANDED OUTLINE GENERATOR
+        function generateOutline() {
+            const workKey = document.getElementById('mode4WorkSelect').value;
+            const typeKey = document.getElementById('mode4TypeSelect').value;
+            const data = outlineDatabase[workKey];
+            const container = document.getElementById('outlineOutputArea');
+
+            let openingText = data.openings[typeKey] || data.openings.phantich;
+
+            container.innerHTML = `
+                <!-- Work Title & Keywords Card -->
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <h3 class="text-lg font-bold text-amber-400">${data.title}</h3>
+                        <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full font-bold">12 Tác Phẩm Trọng Tâm</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        ${data.keywords.map(k => `<span class="px-2.5 py-1 bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg font-medium"><i class="fa-solid fa-key text-amber-500 mr-1"></i>${k}</span>`).join('')}
+                    </div>
+                </div>
+
+                <!-- Opening Hook Card -->
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                    <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-bolt mr-1"></i> Mở Bài Chiến Thuật Gợi Ý</h4>
+                    <p class="text-slate-300 text-sm leading-relaxed italic bg-slate-900/60 p-3.5 rounded-lg border border-slate-800/80">
+                        "${openingText}"
+                    </p>
+                </div>
+
+                <!-- Detailed Outline Card -->
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                    <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-list-check mr-1"></i> Mạch Dàn Ý Phân Tích Sâu</h4>
+                    <div class="space-y-2.5">
+                        ${data.outline.map(step => `
+                            <div class="flex items-start gap-3 bg-slate-900/40 p-3 rounded-lg border border-slate-800/50">
+                                <i class="fa-solid fa-circle-check text-emerald-400 text-xs mt-1"></i>
+                                <span class="text-slate-200 text-sm font-medium">${step}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function copyOutlineText() {
+            const workKey = document.getElementById('mode4WorkSelect').value;
+            const data = outlineDatabase[workKey];
+            const textToCopy = `${data.title}\nTừ khóa: ${data.keywords.join(', ')}\n\nDÀN Ý CHIẾN THUẬT:\n${data.outline.join('\n')}`;
+            
+            const tempInput = document.createElement('textarea');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            alert("ĐÃ SAO CHÉP DÀN Ý CHIẾN THUẬT VÀO BỘ NHỚ TẠM!");
+        }
+
+        // TEACHER MODAL FUNCTIONS
+        function showTeacherModal() {
+            const currentBoss = bosses[gameState.currentBossIndex];
+            document.getElementById('teacherHintText').innerText = `"${currentBoss.questions[0].hint}"`;
+            document.getElementById('teacherModal').classList.remove('hidden');
+        }
+
+        function closeTeacherModal() {
+            document.getElementById('teacherModal').classList.add('hidden');
+        }
+
+        // INITIALIZATION ON WINDOW LOAD
+        window.onload = function() {
+            initParticles();
+            loadBossStage();
+            generateOutline();
+        };
+    </script>
+</body>
+</html>
